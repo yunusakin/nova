@@ -1,0 +1,12 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orderdb_test
+    username: postgres
+    password: secret
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
