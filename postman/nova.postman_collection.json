@@ -1,0 +1,139 @@
+{
+  "info": {
+    "name": "Nova",
+    "_postman_id": "b1234567-89ab-4cde-f012-3456789abcde",
+    "description": "Postman collection for Nova microservices with success & failure test scenarios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User Service",
+      "item": [
+        {
+          "name": "Create User (Success)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{user_service_url}}",
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Yunus\", \"email\": \"yunus@example.com\" }" }
+          }
+        },
+        {
+          "name": "Create User (Fail - Missing Email)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{user_service_url}}",
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Yunus\" }" }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": { "method": "GET", "url": "{{user_service_url}}" }
+        },
+        {
+          "name": "Get User by ID (Success)",
+          "request": { "method": "GET", "url": "{{user_service_url}}/1" }
+        },
+        {
+          "name": "Get User by ID (Fail - Not Found)",
+          "request": { "method": "GET", "url": "{{user_service_url}}/999" }
+        },
+        {
+          "name": "Delete User (Success)",
+          "request": { "method": "DELETE", "url": "{{user_service_url}}/1" }
+        },
+        {
+          "name": "Delete User (Fail - Not Found)",
+          "request": { "method": "DELETE", "url": "{{user_service_url}}/999" }
+        }
+      ]
+    },
+    {
+      "name": "Product Service",
+      "item": [
+        {
+          "name": "Create Product (Success)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{product_service_url}}",
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Laptop\", \"price\": 1200.0 }" }
+          }
+        },
+        {
+          "name": "Create Product (Fail - Invalid Price)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{product_service_url}}",
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Laptop\", \"price\": -10.0 }" }
+          }
+        },
+        {
+          "name": "Get All Products",
+          "request": { "method": "GET", "url": "{{product_service_url}}" }
+        },
+        {
+          "name": "Get Product by ID (Success)",
+          "request": { "method": "GET", "url": "{{product_service_url}}/1" }
+        },
+        {
+          "name": "Get Product by ID (Fail - Not Found)",
+          "request": { "method": "GET", "url": "{{product_service_url}}/999" }
+        },
+        {
+          "name": "Delete Product (Success)",
+          "request": { "method": "DELETE", "url": "{{product_service_url}}/1" }
+        },
+        {
+          "name": "Delete Product (Fail - Not Found)",
+          "request": { "method": "DELETE", "url": "{{product_service_url}}/999" }
+        }
+      ]
+    },
+    {
+      "name": "Order Service",
+      "item": [
+        {
+          "name": "Create Order (Success)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{order_service_url}}",
+            "body": { "mode": "raw", "raw": "{ \"customer\": \"Yunus\", \"totalAmount\": 1200.0 }" }
+          }
+        },
+        {
+          "name": "Create Order (Fail - Invalid Amount)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{order_service_url}}",
+            "body": { "mode": "raw", "raw": "{ \"customer\": \"Yunus\", \"totalAmount\": -50.0 }" }
+          }
+        },
+        {
+          "name": "Get All Orders",
+          "request": { "method": "GET", "url": "{{order_service_url}}" }
+        },
+        {
+          "name": "Get Order by ID (Success)",
+          "request": { "method": "GET", "url": "{{order_service_url}}/1" }
+        },
+        {
+          "name": "Get Order by ID (Fail - Not Found)",
+          "request": { "method": "GET", "url": "{{order_service_url}}/999" }
+        },
+        {
+          "name": "Delete Order (Success)",
+          "request": { "method": "DELETE", "url": "{{order_service_url}}/1" }
+        },
+        {
+          "name": "Delete Order (Fail - Not Found)",
+          "request": { "method": "DELETE", "url": "{{order_service_url}}/999" }
+        }
+      ]
+    }
+  ]
+}
