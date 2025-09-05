@@ -1,35 +1,35 @@
 package api;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 /**
  * Standard API response wrapper for all services
  */
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ApiResponse<T> {
     private boolean success;
     private T data;
     private String error;
 
     public static <T> ApiResponse<T> ok(T data) {
-        return ApiResponse.<T>builder()
-                .success(true)
-                .data(data)
-                .error(null)
-                .build();
+        ApiResponse<T> response = new ApiResponse<>();
+        response.setSuccess(true);
+        response.setData(data);
+        response.setError(null);
+        return response;
     }
 
     public static <T> ApiResponse<T> fail(String errorMessage) {
-        return ApiResponse.<T>builder()
-                .success(false)
-                .data(null)
-                .error(errorMessage)
-                .build();
+        ApiResponse<T> response = new ApiResponse<>();
+        response.setSuccess(false);
+        response.setData(null);
+        response.setError(errorMessage);
+        return response;
     }
 }
-

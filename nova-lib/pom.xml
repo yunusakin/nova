@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.novacore</groupId>
         <artifactId>novacore</artifactId>
@@ -10,26 +11,20 @@
     </parent>
 
     <artifactId>nova-lib</artifactId>
-    <name>Nova Library</name>
-    <description>Shared utilities and exception handling for NovaCore services</description>
-
-
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <name>Nova Core Library</name>
+    <description>Shared utilities, ApiResponse, and exception handling for NovaCore microservices</description>
 
     <dependencies>
-        <!-- For Spring annotations like @ControllerAdvice -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- ✅ Lombok (uses version from parent POM) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
-
 </project>
