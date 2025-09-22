@@ -16,6 +16,6 @@ RUN mvn -pl order-service -am clean package -DskipTests
 
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
-COPY --from=builder /app/order-service/target/*.jar app.jar
+COPY --from=builder /app/order-service/target/order-service-1.0-SNAPSHOT.jar app.jar
 EXPOSE 8083
 ENTRYPOINT ["java","-jar","app.jar"]

@@ -2,11 +2,21 @@ server:
   port: 8082
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcPoolAutoConfiguration
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/productdb
-    username: postgres
-    password: secret
+    url: jdbc:postgresql://product-db:5432/productdb
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
