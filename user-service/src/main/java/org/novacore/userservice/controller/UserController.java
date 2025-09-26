@@ -1,5 +1,6 @@
 package org.novacore.userservice.controller;
 
+import jakarta.validation.Valid;
 import org.novacore.novalib.api.ApiResponse;
 import org.novacore.userservice.controller.dto.UserRequestDTO;
 import org.novacore.userservice.controller.dto.UserResponseDTO;
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UserResponseDTO>> create(@RequestBody UserRequestDTO dto) {
+    public ResponseEntity<ApiResponse<UserResponseDTO>> create(@Valid @RequestBody UserRequestDTO dto) {
         UserResponseDTO saved = service.createUser(dto);
         return ResponseEntity.created(URI.create("/api/users/" + saved.getId()))
                 .body(ApiResponse.ok(saved));

@@ -1,5 +1,6 @@
 package org.novacore.productservice.controller;
 
+import jakarta.validation.Valid;
 import org.novacore.novalib.api.ApiResponse;
 import org.novacore.productservice.controller.dto.ProductRequestDTO;
 import org.novacore.productservice.controller.dto.ProductResponseDTO;
@@ -33,7 +34,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ProductResponseDTO>> create(@RequestBody ProductRequestDTO dto) {
+    public ResponseEntity<ApiResponse<ProductResponseDTO>> create(@Valid @RequestBody ProductRequestDTO dto) {
         ProductResponseDTO saved = service.createProduct(dto);
         return ResponseEntity.created(URI.create("/api/products/" + saved.getId()))
                 .body(ApiResponse.ok(saved));

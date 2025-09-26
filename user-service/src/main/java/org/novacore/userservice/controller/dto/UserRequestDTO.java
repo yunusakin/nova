@@ -14,6 +14,7 @@ public class UserRequestDTO {
     private String name;
 
     @Email
+    @NotBlank(message = "Mail can not be blank")
     private String email;
 }
 

@@ -1,5 +1,6 @@
 package org.novacore.orderservice.controller;
 
+import jakarta.validation.Valid;
 import org.novacore.novalib.api.ApiResponse;
 import org.novacore.orderservice.controller.dto.OrderRequestDTO;
 import org.novacore.orderservice.controller.dto.OrderResponseDTO;
@@ -11,7 +12,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/org/novacore/novalib/api/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService service;
@@ -33,7 +34,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<OrderResponseDTO>> create(@RequestBody OrderRequestDTO dto) {
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> create(@Valid @RequestBody OrderRequestDTO dto) {
         OrderResponseDTO saved = service.createOrder(dto);
         return ResponseEntity.created(URI.create("/api/orders/" + saved.getId()))
                 .body(ApiResponse.ok(saved));
