@@ -1,8 +1,11 @@
 package org.novacore.userservice.service;
 
+import lombok.RequiredArgsConstructor;
+import org.novacore.novalib.events.UserCreatedEvent;
 import org.novacore.userservice.controller.dto.UserRequestDTO;
 import org.novacore.userservice.controller.dto.UserResponseDTO;
 import org.novacore.userservice.domain.User;
+import org.novacore.userservice.events.UserEventPublisher;
 import org.springframework.stereotype.Service;
 import org.novacore.userservice.repository.UserRepository;
 
@@ -11,12 +14,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository repo;
-
-    public UserService(UserRepository repo) {
-        this.repo = repo;
-    }
+    private final UserEventPublisher userEventPublisher;
 
     private UserResponseDTO toResponse(User user) {
         return UserResponseDTO.builder()
@@ -41,13 +42,13 @@ public class UserService {
         return repo.findById(id).map(this::toResponse);
     }
 
-    public UserResponseDTO createUser(UserRequestDTO dto) {
-        repo.findByEmail(dto.getEmail()).ifPresent(u -> {
-            throw new IllegalArgumentException("Email already in use: " + dto.getEmail());
-        });
-        User saved = repo.save(toEntity(dto));
-        return toResponse(saved);
-    }
+//    public UserResponseDTO createUser(UserRequestDTO dto) {
+//        repo.findByEmail(dto.getEmail()).ifPresent(u -> {
+//            throw new IllegalArgumentException("Email already in use: " + dto.getEmail());
+//        });
+//        User saved = repo.save(toEntity(dto));
+//        return toResponse(saved);
+//    }
 
     public void deleteUser(Long id) {
         if (!repo.existsById(id)) {
@@ -55,5 +56,16 @@ public class UserService {
         }
         repo.deleteById(id);
     }
+    public UserResponseDTO createUser(UserRequestDTO dto) {
+        User user = repo.save(new User(dto.getName(), dto.getEmail()));
+        UserResponseDTO response = toResponse(user);
+
+        userEventPublisher.publishUserCreated(
+                new UserCreatedEvent(user.getId(), user.getName(), user.getEmail())
+        );
+
+        return response;
+    }
+
 }
 
