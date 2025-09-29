@@ -42,13 +42,6 @@ public class UserService {
         return repo.findById(id).map(this::toResponse);
     }
 
-//    public UserResponseDTO createUser(UserRequestDTO dto) {
-//        repo.findByEmail(dto.getEmail()).ifPresent(u -> {
-//            throw new IllegalArgumentException("Email already in use: " + dto.getEmail());
-//        });
-//        User saved = repo.save(toEntity(dto));
-//        return toResponse(saved);
-//    }
 
     public void deleteUser(Long id) {
         if (!repo.existsById(id)) {
@@ -57,7 +50,10 @@ public class UserService {
         repo.deleteById(id);
     }
     public UserResponseDTO createUser(UserRequestDTO dto) {
-        User user = repo.save(new User(dto.getName(), dto.getEmail()));
+        repo.findByEmail(dto.getEmail()).ifPresent(u -> {
+            throw new IllegalArgumentException("Email already in use: " + dto.getEmail());
+        });
+        User user = repo.save(toEntity(dto));
         UserResponseDTO response = toResponse(user);
 
         userEventPublisher.publishUserCreated(
