@@ -7,6 +7,7 @@ import org.novacore.productservice.repository.ProductRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +38,7 @@ public class ProductService {
         return repo.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    public Optional<ProductResponseDTO> getProductById(Long id) {
+    public Optional<ProductResponseDTO> getProductById(UUID id) {
         return repo.findById(id).map(this::toResponse);
     }
 
@@ -49,7 +50,7 @@ public class ProductService {
         return toResponse(saved);
     }
 
-    public void deleteProduct(Long id) {
+    public void deleteProduct(UUID id) {
         if (!repo.existsById(id)) {
             throw new IllegalArgumentException("Product not found: " + id);
         }

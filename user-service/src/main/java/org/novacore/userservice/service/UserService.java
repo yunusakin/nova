@@ -11,6 +11,7 @@ import org.novacore.userservice.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,12 +39,12 @@ public class UserService {
         return repo.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    public Optional<UserResponseDTO> getUserById(Long id) {
+    public Optional<UserResponseDTO> getUserById(UUID id) {
         return repo.findById(id).map(this::toResponse);
     }
 
 
-    public void deleteUser(Long id) {
+    public void deleteUser(UUID id) {
         if (!repo.existsById(id)) {
             throw new IllegalArgumentException("User not found: " + id);
         }

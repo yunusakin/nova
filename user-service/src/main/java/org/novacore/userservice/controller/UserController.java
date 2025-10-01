@@ -10,6 +10,7 @@ import org.novacore.userservice.service.UserService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponseDTO>> getById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<UserResponseDTO>> getById(@PathVariable UUID id) {
         return service.getUserById(id)
                 .map(dto -> ResponseEntity.ok(ApiResponse.ok(dto)))
                 .orElse(ResponseEntity.notFound().build());
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         try {
             service.deleteUser(id);
             return ResponseEntity.ok(ApiResponse.ok(null));

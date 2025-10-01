@@ -1,6 +1,7 @@
 package org.novacore.productservice.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -26,4 +27,7 @@ public class Product {
 
     @Positive
     private Double price;
+
+    @Min(0)
+    private Integer stock;
 }

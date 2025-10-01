@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.novacore.orderservice.domain.enumeration.OrderStatus;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -13,7 +15,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class OrderResponseDTO {
+
     private UUID id;
-    private String customer;
+    private Long userId;
+    private Long productId;
+    private Integer quantity;
     private Double totalAmount;
+    private OrderStatus status;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

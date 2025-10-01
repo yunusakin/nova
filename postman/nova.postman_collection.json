@@ -2,7 +2,7 @@
   "info": {
     "name": "Nova",
     "_postman_id": "b1234567-89ab-4cde-f012-3456789abcde",
-    "description": "Postman collection for Nova microservices with success & failure test scenarios",
+    "description": "Postman collection for Nova",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -33,19 +33,37 @@
         },
         {
           "name": "Get User by ID (Success)",
-          "request": { "method": "GET", "url": "{{user_service_url}}/1" }
+          "request": { "method": "GET", "url": "{{user_service_url}}/{{userId}}" }
         },
         {
           "name": "Get User by ID (Fail - Not Found)",
-          "request": { "method": "GET", "url": "{{user_service_url}}/999" }
+          "request": { "method": "GET", "url": "{{user_service_url}}/00000000-0000-0000-0000-000000000000" }
+        },
+        {
+          "name": "Update User (Success)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{user_service_url}}/{{userId}}",
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Yunus Updated\", \"email\": \"yunus.updated@example.com\" }" }
+          }
+        },
+        {
+          "name": "Update User (Fail - Not Found)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{user_service_url}}/00000000-0000-0000-0000-000000000000",
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Ghost\", \"email\": \"ghost@example.com\" }" }
+          }
         },
         {
           "name": "Delete User (Success)",
-          "request": { "method": "DELETE", "url": "{{user_service_url}}/1" }
+          "request": { "method": "DELETE", "url": "{{user_service_url}}/{{userId}}" }
         },
         {
           "name": "Delete User (Fail - Not Found)",
-          "request": { "method": "DELETE", "url": "{{user_service_url}}/999" }
+          "request": { "method": "DELETE", "url": "{{user_service_url}}/00000000-0000-0000-0000-000000000000" }
         }
       ]
     },
@@ -58,16 +76,16 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{product_service_url}}",
-            "body": { "mode": "raw", "raw": "{ \"name\": \"Laptop\", \"price\": 1200.0 }" }
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Laptop\", \"price\": 1200.0, \"stock\": 10 }" }
           }
         },
         {
-          "name": "Create Product (Fail - Invalid Price)",
+          "name": "Create Product (Fail - Negative Stock)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{product_service_url}}",
-            "body": { "mode": "raw", "raw": "{ \"name\": \"Laptop\", \"price\": -10.0 }" }
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Laptop\", \"price\": 1200.0, \"stock\": -5 }" }
           }
         },
         {
@@ -76,19 +94,37 @@
         },
         {
           "name": "Get Product by ID (Success)",
-          "request": { "method": "GET", "url": "{{product_service_url}}/1" }
+          "request": { "method": "GET", "url": "{{product_service_url}}/{{productId}}" }
         },
         {
           "name": "Get Product by ID (Fail - Not Found)",
-          "request": { "method": "GET", "url": "{{product_service_url}}/999" }
+          "request": { "method": "GET", "url": "{{product_service_url}}/00000000-0000-0000-0000-000000000000" }
+        },
+        {
+          "name": "Update Product (Success)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{product_service_url}}/{{productId}}",
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Laptop Pro\", \"price\": 2000.0, \"stock\": 8 }" }
+          }
+        },
+        {
+          "name": "Update Product (Fail - Not Found)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{product_service_url}}/00000000-0000-0000-0000-000000000000",
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Ghost Product\", \"price\": 100.0, \"stock\": 1 }" }
+          }
         },
         {
           "name": "Delete Product (Success)",
-          "request": { "method": "DELETE", "url": "{{product_service_url}}/1" }
+          "request": { "method": "DELETE", "url": "{{product_service_url}}/{{productId}}" }
         },
         {
           "name": "Delete Product (Fail - Not Found)",
-          "request": { "method": "DELETE", "url": "{{product_service_url}}/999" }
+          "request": { "method": "DELETE", "url": "{{product_service_url}}/00000000-0000-0000-0000-000000000000" }
         }
       ]
     },
@@ -101,16 +137,22 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{order_service_url}}",
-            "body": { "mode": "raw", "raw": "{ \"customer\": \"Yunus\", \"totalAmount\": 1200.0 }" }
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"userId\": \"{{userId}}\", \"productId\": \"{{productId}}\", \"quantity\": 2, \"productPrice\": 1200.0 }"
+            }
           }
         },
         {
-          "name": "Create Order (Fail - Invalid Amount)",
+          "name": "Create Order (Fail - Quantity Zero)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{order_service_url}}",
-            "body": { "mode": "raw", "raw": "{ \"customer\": \"Yunus\", \"totalAmount\": -50.0 }" }
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"userId\": \"{{userId}}\", \"productId\": \"{{productId}}\", \"quantity\": 0, \"productPrice\": 1200.0 }"
+            }
           }
         },
         {
@@ -119,21 +161,50 @@
         },
         {
           "name": "Get Order by ID (Success)",
-          "request": { "method": "GET", "url": "{{order_service_url}}/1" }
+          "request": { "method": "GET", "url": "{{order_service_url}}/{{orderId}}" }
         },
         {
           "name": "Get Order by ID (Fail - Not Found)",
-          "request": { "method": "GET", "url": "{{order_service_url}}/999" }
+          "request": { "method": "GET", "url": "{{order_service_url}}/00000000-0000-0000-0000-000000000000" }
+        },
+        {
+          "name": "Update Order (Success)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{order_service_url}}/{{orderId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"userId\": \"{{userId}}\", \"productId\": \"{{productId}}\", \"quantity\": 3, \"productPrice\": 1200.0 }"
+            }
+          }
+        },
+        {
+          "name": "Update Order (Fail - Not Found)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{order_service_url}}/00000000-0000-0000-0000-000000000000",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"userId\": \"{{userId}}\", \"productId\": \"{{productId}}\", \"quantity\": 1, \"productPrice\": 500.0 }"
+            }
+          }
         },
         {
           "name": "Delete Order (Success)",
-          "request": { "method": "DELETE", "url": "{{order_service_url}}/1" }
+          "request": { "method": "DELETE", "url": "{{order_service_url}}/{{orderId}}" }
         },
         {
           "name": "Delete Order (Fail - Not Found)",
-          "request": { "method": "DELETE", "url": "{{order_service_url}}/999" }
+          "request": { "method": "DELETE", "url": "{{order_service_url}}/00000000-0000-0000-0000-000000000000" }
         }
       ]
     }
+  ],
+  "variable": [
+    { "key": "userId", "value": "550e8400-e29b-41d4-a716-446655440000" },
+    { "key": "productId", "value": "660e8400-e29b-41d4-a716-446655440000" },
+    { "key": "orderId", "value": "770e8400-e29b-41d4-a716-446655440000" }
   ]
 }

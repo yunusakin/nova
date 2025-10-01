@@ -10,6 +10,7 @@ import org.novacore.productservice.service.ProductService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/products")
@@ -27,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductResponseDTO>> getById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<ProductResponseDTO>> getById(@PathVariable UUID id) {
         return service.getProductById(id)
                 .map(dto -> ResponseEntity.ok(ApiResponse.ok(dto)))
                 .orElse(ResponseEntity.notFound().build());
@@ -41,7 +42,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         try {
             service.deleteProduct(id);
             return ResponseEntity.ok(ApiResponse.ok(null));
