@@ -31,6 +31,7 @@ public class ProductService {
         return Product.builder()
                 .name(dto.getName())
                 .price(dto.getPrice())
+                .stock(dto.getStock())
                 .build();
     }
 
