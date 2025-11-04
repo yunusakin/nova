@@ -1,38 +1,5 @@
-server:
-  port: ${GATEWAY_PORT:8080}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-
 spring:
-  main:
-    web-application-type: reactive
-  cloud:
-    gateway:
-      default-filters:
-        - PreserveHostHeader
-      routes:
-        - id: auth-service
-          uri: http://auth-service:8084
-          predicates:
-            - Path=/api/auth/**
-        - id: user-service
-          uri: http://user-service:8081
-          predicates:
-            - Path=/api/users/**
-        - id: product-service
-          uri: http://product-service:8082
-          predicates:
-            - Path=/api/products/**
-        - id: order-service
-          uri: http://order-service:8083
-          predicates:
-            - Path=/api/orders/**
-
-logging:
-  level:
-    org.springframework.security: INFO
-    org.springframework.cloud.gateway: INFO
+  application:
+    name: gateway-service
+  profiles:
+    active: dev
