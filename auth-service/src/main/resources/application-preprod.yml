@@ -3,13 +3,13 @@ server:
 
 spring:
   datasource:
-    url: ${AUTH_SERVICE_DB_URL:jdbc:postgresql://auth-db:5432/authdb}
+    url: ${AUTH_SERVICE_DB_URL:jdbc:postgresql://auth-db-preprod:5432/authdb_preprod}
     username: ${AUTH_SERVICE_DB_USERNAME:auth}
     password: ${AUTH_SERVICE_DB_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -27,14 +27,14 @@ management:
 nova:
   security:
     jwt:
-      issuer: novacore-auth-service
-      secret: ${NOVA_SECURITY_JWT_SECRET:changeme-super-secret-key}
-      access-token-expiration-minutes: 15
-      refresh-token-expiration-days: 7
+      issuer: ${NOVA_SECURITY_JWT_ISSUER:novacore-auth-service}
+      secret: ${NOVA_SECURITY_JWT_SECRET}
+      access-token-expiration-minutes: ${NOVA_SECURITY_JWT_ACCESS_MINUTES:15}
+      refresh-token-expiration-days: ${NOVA_SECURITY_JWT_REFRESH_DAYS:7}
   clients:
     user-service:
       base-url: ${NOVA_CLIENTS_USER_SERVICE_BASE_URL:http://user-service:8081}
 
 logging:
   level:
-    org.springframework.security: INFO
+    org.springframework.security: WARN

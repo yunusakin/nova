@@ -15,6 +15,7 @@ public record OrderRequest(
         @NotNull(message = "Quantity is required")
         @Min(value = 1, message = "Quantity must be at least 1")
         Integer quantity,
+        @NotNull(message = "Product price is required")
         @DecimalMin(value = "0.0", inclusive = false, message = "Product price must be positive")
         BigDecimal productPrice
 ) {
