@@ -1,0 +1,40 @@
+server:
+  port: 8084
+
+spring:
+  datasource:
+    url: ${AUTH_SERVICE_DB_URL:jdbc:postgresql://auth-db:5432/authdb}
+    username: ${AUTH_SERVICE_DB_USERNAME:auth}
+    password: ${AUTH_SERVICE_DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+  sql:
+    init:
+      mode: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+nova:
+  security:
+    jwt:
+      issuer: novacore-auth-service
+      secret: ${NOVA_SECURITY_JWT_SECRET:changeme-super-secret-key}
+      access-token-expiration-minutes: 15
+      refresh-token-expiration-days: 7
+  clients:
+    user-service:
+      base-url: ${NOVA_CLIENTS_USER_SERVICE_BASE_URL:http://user-service:8081}
+
+logging:
+  level:
+    org.springframework.security: INFO
