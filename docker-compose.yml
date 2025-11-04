@@ -22,10 +22,12 @@ services:
   user-db:
     image: postgres:16
     container_name: user-db
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: userdb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${USER_DB_NAME}
+      POSTGRES_USER: ${USER_DB_USER}
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
     ports:
       - "5433:5432"
     networks:
@@ -35,10 +37,12 @@ services:
   product-db:
     image: postgres:16
     container_name: product-db
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: productdb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${PRODUCT_DB_NAME}
+      POSTGRES_USER: ${PRODUCT_DB_USER}
+      POSTGRES_PASSWORD: ${PRODUCT_DB_PASSWORD}
     ports:
       - "5434:5432"
     networks:
@@ -48,12 +52,29 @@ services:
   order-db:
     image: postgres:16
     container_name: order-db
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: orderdb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${ORDER_DB_NAME}
+      POSTGRES_USER: ${ORDER_DB_USER}
+      POSTGRES_PASSWORD: ${ORDER_DB_PASSWORD}
     ports:
       - "5435:5432"
+    networks:
+      - nova-net
+
+  # ✅ Auth DB
+  auth-db:
+    image: postgres:16
+    container_name: auth-db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${AUTH_DB_NAME}
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+    ports:
+      - "5436:5432"
     networks:
       - nova-net
 
@@ -65,8 +86,13 @@ services:
     container_name: user-service
     ports:
       - "8081:8081"
+    env_file:
+      - .env
     environment:
       SPRING_PROFILES_ACTIVE: dev
+      USER_SERVICE_DB_URL: ${USER_SERVICE_DB_URL}
+      USER_SERVICE_DB_USERNAME: ${USER_SERVICE_DB_USERNAME}
+      USER_SERVICE_DB_PASSWORD: ${USER_SERVICE_DB_PASSWORD}
     depends_on:
       - user-db
       - kafka
@@ -81,8 +107,13 @@ services:
     container_name: product-service
     ports:
       - "8082:8082"
+    env_file:
+      - .env
     environment:
       SPRING_PROFILES_ACTIVE: dev
+      PRODUCT_SERVICE_DB_URL: ${PRODUCT_SERVICE_DB_URL}
+      PRODUCT_SERVICE_DB_USERNAME: ${PRODUCT_SERVICE_DB_USERNAME}
+      PRODUCT_SERVICE_DB_PASSWORD: ${PRODUCT_SERVICE_DB_PASSWORD}
     depends_on:
       - product-db
       - kafka
@@ -97,11 +128,59 @@ services:
     container_name: order-service
     ports:
       - "8083:8083"
+    env_file:
+      - .env
     environment:
       SPRING_PROFILES_ACTIVE: dev
+      ORDER_SERVICE_DB_URL: ${ORDER_SERVICE_DB_URL}
+      ORDER_SERVICE_DB_USERNAME: ${ORDER_SERVICE_DB_USERNAME}
+      ORDER_SERVICE_DB_PASSWORD: ${ORDER_SERVICE_DB_PASSWORD}
     depends_on:
       - order-db
       - kafka
+    networks:
+      - nova-net
+
+  # ✅ Auth Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    container_name: auth-service
+    ports:
+      - "8084:8084"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      AUTH_SERVICE_DB_URL: ${AUTH_SERVICE_DB_URL}
+      AUTH_SERVICE_DB_USERNAME: ${AUTH_SERVICE_DB_USERNAME}
+      AUTH_SERVICE_DB_PASSWORD: ${AUTH_SERVICE_DB_PASSWORD}
+      NOVA_SECURITY_JWT_SECRET: ${NOVA_SECURITY_JWT_SECRET}
+      NOVA_CLIENTS_USER_SERVICE_BASE_URL: ${NOVA_CLIENTS_USER_SERVICE_BASE_URL}
+    depends_on:
+      - auth-db
+      - user-service
+    networks:
+      - nova-net
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: ./gateway-service/Dockerfile
+    container_name: gateway-service
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      NOVA_SECURITY_JWT_SECRET: ${NOVA_SECURITY_JWT_SECRET}
+    depends_on:
+      - auth-service
+      - user-service
+      - product-service
+      - order-service
     networks:
       - nova-net
 

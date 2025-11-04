@@ -15,7 +15,8 @@
     <properties>
         <java.version>21</java.version>
         <spring-boot.version>3.3.2</spring-boot.version>
-        <lombok.version>1.18.32</lombok.version> <!-- ✅ added -->
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -30,13 +31,14 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- ✅ Managed Lombok version -->
             <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <scope>provided</scope>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -47,6 +49,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
                 </plugin>
 
                 <!-- Compiler plugin for Java 21 -->
@@ -56,12 +59,11 @@
                     <version>3.11.0</version>
                     <configuration>
                         <release>${java.version}</release>
-                        <!-- ✅ Enable Lombok annotation processing -->
                         <annotationProcessorPaths>
                             <path>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok</artifactId>
-                                <version>${lombok.version}</version>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>
@@ -75,6 +77,8 @@
         <module>product-service</module>
         <module>order-service</module>
         <module>nova-lib</module>
+        <module>auth-service</module>
+        <module>gateway-service</module>
     </modules>
 
 </project>

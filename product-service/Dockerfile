@@ -7,6 +7,8 @@ COPY user-service/pom.xml user-service/
 COPY product-service/pom.xml product-service/
 COPY order-service/pom.xml order-service/
 COPY nova-lib/pom.xml nova-lib/
+COPY auth-service/pom.xml auth-service/
+COPY gateway-service/pom.xml gateway-service/
 
 # Download dependencies (cached unless pom.xml changes)
 RUN mvn -B dependency:go-offline
@@ -16,6 +18,8 @@ COPY user-service/src user-service/src
 COPY product-service/src product-service/src
 COPY order-service/src order-service/src
 COPY nova-lib/src nova-lib/src
+COPY auth-service/src auth-service/src
+COPY gateway-service/src gateway-service/src
 
 # Build only product-service module
 RUN mvn -pl product-service -am clean package -DskipTests

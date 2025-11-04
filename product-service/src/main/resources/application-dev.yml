@@ -20,9 +20,9 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   datasource:
-    url: jdbc:postgresql://product-db:5432/productdb
-    username: user
-    password: password
+    url: ${PRODUCT_SERVICE_DB_URL:jdbc:postgresql://product-db:5432/productdb}
+    username: ${PRODUCT_SERVICE_DB_USERNAME:user}
+    password: ${PRODUCT_SERVICE_DB_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -32,3 +32,11 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
+
+nova:
+  security:
+    jwt:
+      issuer: ${NOVA_SECURITY_JWT_ISSUER:novacore-auth-service}
+      secret: ${NOVA_SECURITY_JWT_SECRET:changeme-super-secret-key}
+      access-token-expiration-minutes: ${NOVA_SECURITY_JWT_ACCESS_MINUTES:15}
+      refresh-token-expiration-days: ${NOVA_SECURITY_JWT_REFRESH_DAYS:7}

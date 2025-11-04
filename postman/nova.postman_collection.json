@@ -15,7 +15,7 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{user_service_url}}",
-            "body": { "mode": "raw", "raw": "{ \"name\": \"Yunus\", \"email\": \"yunus@example.com\" }" }
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Yunus\",\n  \"email\": \"yunus@example.com\",\n  \"password\": \"Password123!\",\n  \"roles\": [\"USER\"],\n  \"status\": \"ACTIVE\"\n}" }
           }
         },
         {
@@ -24,7 +24,7 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{user_service_url}}",
-            "body": { "mode": "raw", "raw": "{ \"name\": \"Yunus\" }" }
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Yunus\",\n  \"password\": \"Password123!\"\n}" }
           }
         },
         {
@@ -45,7 +45,7 @@
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{user_service_url}}/{{userId}}",
-            "body": { "mode": "raw", "raw": "{ \"name\": \"Yunus Updated\", \"email\": \"yunus.updated@example.com\" }" }
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Yunus Updated\",\n  \"email\": \"yunus.updated@example.com\",\n  \"roles\": [\"ADMIN\", \"USER\"],\n  \"status\": \"ACTIVE\"\n}" }
           }
         },
         {
@@ -54,7 +54,7 @@
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{user_service_url}}/00000000-0000-0000-0000-000000000000",
-            "body": { "mode": "raw", "raw": "{ \"name\": \"Ghost\", \"email\": \"ghost@example.com\" }" }
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Ghost\",\n  \"email\": \"ghost@example.com\",\n  \"password\": \"Password123!\"\n}" }
           }
         },
         {
@@ -200,11 +200,79 @@
           "request": { "method": "DELETE", "url": "{{order_service_url}}/00000000-0000-0000-0000-000000000000" }
         }
       ]
+    },
+    {
+      "name": "Auth Service",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{auth_service_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"yunus@example.com\",\n  \"password\": \"Password123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{auth_service_url}}/api/auth/refresh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{auth_service_url}}/api/auth/logout",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Validate Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+            ],
+            "url": "{{auth_service_url}}/api/auth/validate"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gateway",
+      "item": [
+        {
+          "name": "Gateway - Get Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+            ],
+            "url": "{{gateway_url}}/api/users"
+          }
+        }
+      ]
     }
   ],
   "variable": [
     { "key": "userId", "value": "550e8400-e29b-41d4-a716-446655440000" },
     { "key": "productId", "value": "660e8400-e29b-41d4-a716-446655440000" },
-    { "key": "orderId", "value": "770e8400-e29b-41d4-a716-446655440000" }
+    { "key": "orderId", "value": "770e8400-e29b-41d4-a716-446655440000" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" }
   ]
 }
