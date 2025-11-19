@@ -1,0 +1,46 @@
+server:
+  port: ${GATEWAY_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+spring:
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      default-filters:
+        - PreserveHostHeader
+      routes:
+        - id: auth-service
+          uri: ${AUTH_SERVICE_BASE_URL:http://auth-service:8084}
+          predicates:
+            - Path=/api/auth/**
+        - id: user-service
+          uri: ${USER_SERVICE_BASE_URL:http://user-service:8081}
+          predicates:
+            - Path=/api/users/**
+        - id: product-service
+          uri: ${PRODUCT_SERVICE_BASE_URL:http://product-service:8082}
+          predicates:
+            - Path=/api/products/**
+        - id: order-service
+          uri: ${ORDER_SERVICE_BASE_URL:http://order-service:8083}
+          predicates:
+            - Path=/api/orders/**
+
+logging:
+  level:
+    org.springframework.security: WARN
+    org.springframework.cloud.gateway: INFO
+
+nova:
+  security:
+    jwt:
+      issuer: ${NOVA_SECURITY_JWT_ISSUER:novacore-auth-service}
+      secret: ${NOVA_SECURITY_JWT_SECRET:changeme-super-secret-key}
+      access-token-expiration-minutes: ${NOVA_SECURITY_JWT_ACCESS_MINUTES:15}
+      refresh-token-expiration-days: ${NOVA_SECURITY_JWT_REFRESH_DAYS:7}

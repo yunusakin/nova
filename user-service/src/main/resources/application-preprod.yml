@@ -10,3 +10,7 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
+
+nova:
+  internal:
+    shared-secret: ${NOVA_INTERNAL_SHARED_SECRET}

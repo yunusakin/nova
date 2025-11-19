@@ -19,11 +19,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderEventPublisher eventPublisher;
     private final OrderMapper orderMapper;
+    private final ReferenceDataService referenceDataService;
 
-    public OrderService(OrderRepository orderRepository, OrderEventPublisher eventPublisher, OrderMapper orderMapper) {
+    public OrderService(OrderRepository orderRepository,
+                        OrderEventPublisher eventPublisher,
+                        OrderMapper orderMapper,
+                        ReferenceDataService referenceDataService) {
         this.orderRepository = orderRepository;
         this.eventPublisher = eventPublisher;
         this.orderMapper = orderMapper;
+        this.referenceDataService = referenceDataService;
     }
 
     public List<OrderResponse> findAll() {
@@ -36,6 +41,7 @@ public class OrderService {
 
     @Transactional
     public OrderResponse create(OrderRequest request) {
+        validateReferenceData(request);
         PurchaseOrder saved = orderRepository.save(orderMapper.toEntity(request));
         eventPublisher.publishOrderCreated(saved.getId(), saved.getUserId(), saved.getProductId(), saved.getQuantity(), saved.getProductPrice(), saved.getTotalPrice());
         return orderMapper.toResponse(saved);
@@ -57,5 +63,10 @@ public class OrderService {
     private PurchaseOrder getById(UUID id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order %s not found".formatted(id)));
+    }
+
+    private void validateReferenceData(OrderRequest request) {
+        referenceDataService.assertUserExists(request.userId());
+        referenceDataService.assertProductExists(request.productId());
     }
 }

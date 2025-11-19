@@ -1,0 +1,76 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2865
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Light;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 ## \uc0\u55357 \u56541  Microservices Architecture Build Steps\
+\
+- **Phase 1: Project Setup**\
+  - Created **multi-module Maven project** `novacore` (parent POM).\
+  - Added submodules: `user-service`, `product-service`, `order-service`, and `nova-lib` (shared library).\
+  - Configured **Java 21 + Spring Boot 3** in parent POM.\
+  - Added per-service POMs with JPA, PostgreSQL, Web, Lombok dependencies.\
+  - Structured services with `Controller \uc0\u8594  Service \u8594  Repository` layers.\
+  - Introduced **DTOs** instead of exposing entities directly.\
+  - Created **`core-lib` (nova-lib)** to hold shared code (DTOs, ApiResponse wrapper, configs).\
+\
+- **Phase 2: Persistence & Config**\
+  - Integrated **PostgreSQL** for each service with separate DB containers (`user-db`, `product-db`, `order-db`).\
+  - Configured **application.yml per profile** (dev/test/prod/preprod).\
+  - Each service connected to its own DB using Spring JPA + Hibernate dialect.\
+\
+- **Phase 3: Dockerization**\
+  - Wrote **Dockerfiles** for each service.\
+  - Built full **docker-compose.yml**:\
+    - 3 Postgres DBs\
+    - user-service, product-service, order-service\
+    - Shared `nova-net` bridge network\
+  - Verified all services run together in `dev` profile.\
+\
+- **Phase 4: Event-Driven Transition**\
+  - Decided to replace **synchronous REST calls** with **asynchronous events via Kafka**.\
+  - Added **official Apache Kafka (KRaft mode)** container to `docker-compose.yml`.\
+  - Added **Kafka UI** (`provectuslabs/kafka-ui`) for topic/consumer monitoring.\
+\
+- **Phase 5: Kafka Integration**\
+  - Added `spring-kafka` dependency to `nova-lib`.\
+  - Created **Event Models** in `nova-lib`:\
+    - `UserCreatedEvent`\
+    - `ProductCreatedEvent`\
+    - `OrderCreatedEvent`\
+    - (optional) `ProductStockUpdatedEvent`, `OrderCancelledEvent`\
+  - Implemented **KafkaAdminConfig** in `nova-lib`:\
+    - Auto-create topics: `user-created`, `product-created`, `order-created`\
+  - Implemented **KafkaConfig** in `nova-lib`:\
+    - Centralized Producer/Consumer factories\
+    - Exposed shared `KafkaTemplate`\
+    - Configured JSON serialization/deserialization\
+    - Added **retry + Dead Letter Queue (DLQ)** support with `DefaultErrorHandler`\
+  - Added **DlqConsumer** in `nova-lib` to log any failed messages (`*.DLT`).\
+\
+- **Phase 6: Service Integration**\
+  - **Publishers**:\
+    - UserService publishes `UserCreatedEvent`\
+    - ProductService publishes `ProductCreatedEvent`\
+    - OrderService publishes `OrderCreatedEvent`\
+  - **Consumers**:\
+    - OrderService consumes `user-created` and `product-created`\
+    - ProductService consumes `order-created` (reduce stock)\
+    - UserService optionally consumes `order-created` (audit, activity log)\
+\
+- **Phase 7: Monitoring & Reliability**\
+  - Verified topics and events flow in **Kafka UI (http://localhost:8089)**.\
+  - Implemented DLQ strategy:\
+    - Failed events retried with exponential backoff (3 attempts).\
+    - Unrecoverable events sent to `<topic>.DLT`.\
+    - DLQ messages logged by `DlqConsumer`.\
+\
+- **Phase 8: Authentication & Authorization**\
+  - Added dedicated `auth-service` (Spring Boot 3) with PostgreSQL-backed `auth-db` for refresh tokens and role management.\
+  - Centralized JWT creation/validation via shared utilities in `nova-lib` (`JwtTokenService`, DTOs, configuration properties).\
+  - Extended `user-service` with credential storage, role management, and an internal lookup API for authentication workflows.\
+  - Published login, refresh, logout, and validate endpoints secured with stateless bearer tokens and role-aware claims.\
+  - Introduced `gateway-service` (Spring Cloud Gateway) that authenticates bearer tokens, forwards identity context headers, and routes traffic to downstream services.\
+  - Updated Docker Compose, Postman collections, and environments with auth-service routing and new authentication flows.\
+}
