@@ -16,3 +16,7 @@ management:
     web:
       exposure:
         include: health,info,metrics
+
+nova:
+  internal:
+    shared-secret: ${NOVA_INTERNAL_SHARED_SECRET}

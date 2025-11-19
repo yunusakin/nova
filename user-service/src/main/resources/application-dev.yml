@@ -34,6 +34,8 @@ spring:
     open-in-view: false
 
 nova:
+  internal:
+    shared-secret: ${NOVA_INTERNAL_SHARED_SECRET:local-internal-secret}
   security:
     jwt:
       issuer: ${NOVA_SECURITY_JWT_ISSUER:novacore-auth-service}

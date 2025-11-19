@@ -10,6 +10,8 @@ management:
 spring:
   main:
     web-application-type: reactive
+  kafka:
+    bootstrap-servers: kafka:9092
   cloud:
     gateway:
       default-filters:

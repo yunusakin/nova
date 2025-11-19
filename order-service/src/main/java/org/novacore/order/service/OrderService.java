@@ -66,11 +66,7 @@ public class OrderService {
     }
 
     private void validateReferenceData(OrderRequest request) {
-        if (!referenceDataService.userExists(request.userId())) {
-            throw new ResourceNotFoundException("User %s not found for order".formatted(request.userId()));
-        }
-        if (!referenceDataService.productExists(request.productId())) {
-            throw new ResourceNotFoundException("Product %s not found for order".formatted(request.productId()));
-        }
+        referenceDataService.assertUserExists(request.userId());
+        referenceDataService.assertProductExists(request.productId());
     }
 }

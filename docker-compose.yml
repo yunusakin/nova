@@ -20,7 +20,7 @@ services:
 
   # ✅ Kafka UI
   kafka-ui:
-    image: provectus/kafka-ui:latest
+    image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     ports:
       - "8089:8080"

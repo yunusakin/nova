@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -30,6 +31,17 @@ public class UserSummary {
     @UpdateTimestamp
     @Column(nullable = false)
     private Instant updatedAt;
+
+    @Version
+    @Column(nullable = false)
+    private long version;
+
+    public UserSummary() {
+    }
+
+    public UserSummary(UUID id) {
+        this.id = id;
+    }
 
     public UUID getId() {
         return id;
@@ -61,5 +73,9 @@ public class UserSummary {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public long getVersion() {
+        return version;
     }
 }
