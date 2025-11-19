@@ -21,7 +21,12 @@ public class OrderEventsListener {
 
     @KafkaListener(topics = KafkaTopics.ORDER_CREATED, groupId = "user-service-audit")
     public void onOrderCreated(OrderCreatedEvent event) {
-        auditService.record(event);
-        log.info("Recorded order {} for user {}", event.orderId(), event.userId());
+        try {
+            auditService.record(event);
+            log.info("Recorded order {} for user {}", event.orderId(), event.userId());
+        } catch (Exception ex) {
+            log.error("Failed to record order {} for user {}", event.orderId(), event.userId(), ex);
+            throw ex;
+        }
     }
 }

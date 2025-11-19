@@ -33,7 +33,9 @@ nova:
       refresh-token-expiration-days: ${NOVA_SECURITY_JWT_REFRESH_DAYS}
   clients:
     user-service:
-      base-url: ${NOVA_CLIENTS_USER_SERVICE_BASE_URL}
+      base-url: ${NOVA_CLIENTS_USER_SERVICE_BASE_URL:http://user-service:8081}
+  internal:
+    shared-secret: ${NOVA_INTERNAL_SHARED_SECRET}
 
 logging:
   level:

@@ -10,12 +10,12 @@ import org.novacore.order.repository.UserSummaryRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
-@Transactional
 public class ReferenceDataService {
 
     private static final int MAX_UPSERT_ATTEMPTS = 3;
@@ -29,6 +29,7 @@ public class ReferenceDataService {
         this.productSummaryRepository = productSummaryRepository;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void upsertUser(UserCreatedEvent event) {
         executeWithRetry(() -> {
             UserSummary summary = userSummaryRepository.findByIdForUpdate(event.userId())
@@ -39,6 +40,7 @@ public class ReferenceDataService {
         });
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void upsertProduct(ProductCreatedEvent event) {
         executeWithRetry(() -> {
             ProductSummary summary = productSummaryRepository.findByIdForUpdate(event.productId())
@@ -72,7 +74,12 @@ public class ReferenceDataService {
                 if (++attempts >= MAX_UPSERT_ATTEMPTS) {
                     throw ex;
                 }
-                Thread.onSpinWait();
+                try {
+                    Thread.sleep(100L * attempts); // exponential backoff
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw ex;
+                }
             }
         }
     }

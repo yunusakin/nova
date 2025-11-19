@@ -19,8 +19,12 @@ public class UserServiceClient {
 
     private final RestClient restClient;
 
+    private final String internalSecret;
+
     public UserServiceClient(@Value("${nova.clients.user-service.base-url}") String baseUrl,
+                             @Value("${nova.internal.shared-secret}") String internalSecret,
                              RestClient.Builder builder) {
+        this.internalSecret = internalSecret;
         this.restClient = builder.baseUrl(baseUrl).build();
     }
 
@@ -28,6 +32,7 @@ public class UserServiceClient {
         try {
             ApiResponse<UserCredentialDto> response = restClient.get()
                     .uri("/internal/users/email/{email}", email)
+                    .header("X-Internal-Secret", internalSecret)
                     .retrieve()
                     .body(RESPONSE_TYPE);
             if (response == null || !response.success()) {
