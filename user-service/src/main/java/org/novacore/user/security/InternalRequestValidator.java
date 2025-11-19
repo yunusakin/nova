@@ -17,9 +17,6 @@ public class InternalRequestValidator {
     }
 
     public void validate(String providedSecret) {
-        if (sharedSecret == null || sharedSecret.isBlank()) {
-            throw new AuthenticationException("Internal secret is not configured");
-        }
         if (providedSecret == null || !java.security.MessageDigest.isEqual(
                 sharedSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8),
                 providedSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8))) {

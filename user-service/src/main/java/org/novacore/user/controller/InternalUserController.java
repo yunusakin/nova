@@ -27,7 +27,7 @@ public class InternalUserController {
 
     @GetMapping("/email/{email}")
     public ResponseEntity<ApiResponse<UserCredentialDto>> findByEmail(@PathVariable String email,
-                                                                      @RequestHeader("X-Internal-Secret") String secret) {
+                                                                      @RequestHeader(value = "X-Internal-Secret", required = true) String secret) {
         requestValidator.validate(secret);
         return userService.findCredentialsByEmail(email)
                 .map(credentials -> ResponseEntity.ok(ApiResponse.success(credentials)))

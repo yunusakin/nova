@@ -35,7 +35,7 @@ nova:
     user-service:
       base-url: ${NOVA_CLIENTS_USER_SERVICE_BASE_URL:http://user-service:8081}
   internal:
-    shared-secret: ${NOVA_INTERNAL_SHARED_SECRET:local-internal-secret}
+    shared-secret: ${NOVA_INTERNAL_SHARED_SECRET}
 
 logging:
   level:

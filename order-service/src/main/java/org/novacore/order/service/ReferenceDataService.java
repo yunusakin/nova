@@ -10,6 +10,8 @@ import org.novacore.order.repository.UserSummaryRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,57 +32,45 @@ public class ReferenceDataService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Retryable(
+            retryFor = {ObjectOptimisticLockingFailureException.class, DataIntegrityViolationException.class},
+            maxAttempts = MAX_UPSERT_ATTEMPTS,
+            backoff = @Backoff(delay = 100, multiplier = 2.0)
+    )
     public void upsertUser(UserCreatedEvent event) {
-        executeWithRetry(() -> {
-            UserSummary summary = userSummaryRepository.findByIdForUpdate(event.userId())
-                    .orElseGet(() -> new UserSummary(event.userId()));
-            summary.setName(event.name());
-            summary.setEmail(event.email());
-            userSummaryRepository.saveAndFlush(summary);
-        });
+        UserSummary summary = userSummaryRepository.findByIdForUpdate(event.userId())
+                .orElseGet(() -> new UserSummary(event.userId()));
+        summary.setName(event.name());
+        summary.setEmail(event.email());
+        userSummaryRepository.saveAndFlush(summary);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Retryable(
+            retryFor = {ObjectOptimisticLockingFailureException.class, DataIntegrityViolationException.class},
+            maxAttempts = MAX_UPSERT_ATTEMPTS,
+            backoff = @Backoff(delay = 100, multiplier = 2.0)
+    )
     public void upsertProduct(ProductCreatedEvent event) {
-        executeWithRetry(() -> {
-            ProductSummary summary = productSummaryRepository.findByIdForUpdate(event.productId())
-                    .orElseGet(() -> new ProductSummary(event.productId()));
-            summary.setName(event.name());
-            summary.setPrice(event.price());
-            summary.setStock(event.stock());
-            productSummaryRepository.saveAndFlush(summary);
-        });
+        ProductSummary summary = productSummaryRepository.findByIdForUpdate(event.productId())
+                .orElseGet(() -> new ProductSummary(event.productId()));
+        summary.setName(event.name());
+        summary.setPrice(event.price());
+        summary.setStock(event.stock());
+        productSummaryRepository.saveAndFlush(summary);
     }
 
-    @Transactional(readOnly = true)
     public void assertUserExists(UUID userId) {
-        userSummaryRepository.findByIdWithLock(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User %s not found".formatted(userId)));
-    }
-
-    @Transactional(readOnly = true)
-    public void assertProductExists(UUID productId) {
-        productSummaryRepository.findByIdWithLock(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product %s not found".formatted(productId)));
-    }
-
-    private void executeWithRetry(Runnable action) {
-        int attempts = 0;
-        while (true) {
-            try {
-                action.run();
-                return;
-            } catch (ObjectOptimisticLockingFailureException | DataIntegrityViolationException ex) {
-                if (++attempts >= MAX_UPSERT_ATTEMPTS) {
-                    throw ex;
-                }
-                try {
-                    Thread.sleep(100L * attempts); // exponential backoff
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    throw ex;
-                }
-            }
+        if (!userSummaryRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User %s not found".formatted(userId));
         }
     }
+
+    public void assertProductExists(UUID productId) {
+        if (!productSummaryRepository.existsById(productId)) {
+            throw new ResourceNotFoundException("Product %s not found".formatted(productId));
+        }
+    }
+
+
 }
